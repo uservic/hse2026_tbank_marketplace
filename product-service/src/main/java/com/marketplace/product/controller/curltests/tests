@@ -1,0 +1,4 @@
+curl -i -X POST http://localhost:8082/products -H "Content-Type: application/json" -d '{\"name\": \"Смартфон GigaPhone 21\", \"description\": \"Флагман на Java 21\", \"price\": 79999.99, \"stock\": 50, \"category\": \"Электроника\", \"status\": \"ACTIVE\"}'
+curl -i -X POST http://localhost:8082/products -H "Content-Type: application/json" -d "{\"name\": \"\", \"description\": \"Тест ошибки\", \"price\": -500.00, \"stock\": -10, \"category\": \"Тест\", \"status\": \"ACTIVE\"}"
+curl -i -X GET http://localhost:8082/products/a63703e5-7c1d-464e-ac16-1475c988f394
+curl -i -X DELETE http://localhost:8082/products/a63703e5-7c1d-464e-ac16-1475c988f394

@@ -1,9 +1,36 @@
+version: '3.8'
+
 services:
+  # --- Инфраструктура (Базы данных) ---
+  postgres:
+    image: postgres:15-alpine
+    container_name: marketplace-postgres
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: "product_db,order_db" # задел под миграции
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: marketplace-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # --- Микросервисы ---
   auth-service:
     build: ./auth-service
     container_name: auth-service-container
     ports:
-      - "8080:8080"
+      - "8081:8081"
+#    environment:
+#      SPRING_REDIS_HOST: redis
+#      SPRING_REDIS_PORT: 6379
+#    depends_on:
+#      - redis
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 10s

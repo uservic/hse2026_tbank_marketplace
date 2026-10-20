@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'org.openapi.generator' version '7.1.0'
+}
+
+group = 'com.marketplace'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.flywaydb:flyway-core'
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // Для работы сгенерированного OpenAPI кода
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+    implementation("org.openapitools:jackson-databind-nullable:0.2.10")
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$projectDir/src/main/resources/openapi/product.yaml".toString()
+    outputDir = "$buildDir/generated/openapi".toString()
+    apiPackage = "com.marketplace.product.api"
+    modelPackage = "com.marketplace.product.model"
+    configOptions = [
+            interfaceOnly: "true",
+            useSpringBoot3: "true", // генерирует jakarta.validation вместо javax.validation
+            useTags: "true",
+            openApiNullable: "false",
+            skipDefaultInterface: "true"
+    ]
+}
+
+// Подключаем сгенерированные классы к сборке проекта
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated/openapi/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn tasks.openApiGenerate
