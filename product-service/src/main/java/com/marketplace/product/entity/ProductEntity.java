@@ -2,6 +2,8 @@ package com.marketplace.product.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,6 +20,8 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import com.marketplace.product.model.ProductStatus;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -31,7 +35,7 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String name;
 
     @Column(length = 4000)
@@ -43,11 +47,12 @@ public class ProductEntity {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 128)
     private String category;
 
-    @Column(nullable = false, length = 20)
-    private String status;
+    @Column(nullable = false, length = 64)
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
     @Column(name = "seller_id")
     private UUID sellerId;

@@ -52,7 +52,7 @@ public interface IProductService {
      * @param id уникальный идентификатор архивируемого товара в формате UUID
      * @throws com.marketplace.product.exception.BusinessException если товар с указанным ID не найден в системе (HTTP 404)
      */
-    void delete(UUID id);
+    void softDelete(UUID id);
 
     /**
      * Возвращает список товаров, соответствующих заданным критериям фильтрации, с поддержкой пагинации.

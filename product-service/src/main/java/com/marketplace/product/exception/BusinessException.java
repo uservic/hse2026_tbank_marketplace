@@ -1,10 +1,12 @@
 package com.marketplace.product.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
  * Кастомное исключение для обработки контролируемых бизнес-ошибок маркетплейса.
  */
+@Getter
 public class BusinessException extends RuntimeException {
 
     private final String errorCode;
@@ -14,13 +16,5 @@ public class BusinessException extends RuntimeException {
         super(message);
         this.errorCode = errorCode;
         this.status = status;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public HttpStatus getStatus() {
-        return status;
     }
 }

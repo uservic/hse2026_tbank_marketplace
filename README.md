@@ -2,11 +2,11 @@
 
 ## Запуск
 В корне проекта выполнить:  
-`docker compose up --build`  
+`docker compose up --build -d`
 В браузере открыть:  
-`http://localhost:8080/actuator/health`  
+`http://localhost:?? 
 В браузере должно отобразиться:  
-`{"status":"UP"}`
+
 
 ## Описание архитектуры
 [Архитектура](arch/ARCH.md)

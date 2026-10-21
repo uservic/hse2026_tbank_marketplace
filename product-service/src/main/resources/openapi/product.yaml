@@ -5,6 +5,11 @@ info:
 tags:
   - name: product
     description: Операции с товарным каталогом
+
+# Глобальные правила безопасности: все эндпоинты требуют Bearer-токен
+security:
+  - bearerAuth: []
+
 paths:
   /products:
     post:
@@ -26,6 +31,10 @@ paths:
                 $ref: '#/components/schemas/ProductResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Требуется авторизация (токен отсутствует или невалиден)
+        '403':
+          description: Недостаточно прав (требуется роль SELLER или ADMIN)
 
     get:
       tags: ["product"]
@@ -37,12 +46,15 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
             default: 0
         - name: size
           in: query
           required: false
           schema:
             type: integer
+            minimum: 1
+            maximum: 100
             default: 20
         - name: status
           in: query
@@ -54,7 +66,6 @@ paths:
           required: false
           schema:
             type: string
-            minLength: 1
             maxLength: 100
       responses:
         '200':
@@ -65,6 +76,8 @@ paths:
                 $ref: '#/components/schemas/ProductPageResponse' # <-- Сделали ссылку вместо инлайна!
         '400':
           $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Требуется авторизация
 
   /products/{id}:
     get:
@@ -85,6 +98,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductResponse'
+        '401':
+          description: Требуется авторизация
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -114,6 +129,10 @@ paths:
                 $ref: '#/components/schemas/ProductResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль SELLER или ADMIN)
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -131,10 +150,21 @@ paths:
       responses:
         '204':
           description: Товар успешно архивирован
+        '401':
+          description: Требуется авторизация
+        '403':
+          description: Недостаточно прав (требуется роль SELLER или ADMIN)
         '404':
           $ref: '#/components/responses/NotFoundError'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Введите JWT-токен, полученный из /auth/login"
+
   responses:
     ValidationError:
       description: Ошибка валидации
@@ -244,20 +274,57 @@ components:
         page:
           type: integer
           description: Номер текущей страницы
+          minimum: 0
+          default: 0
         size:
           type: integer
           description: Размер страницы
+          minimum: 1
+          maximum: 100
+          default: 20
         content:
           type: array
           items:
             $ref: '#/components/schemas/ProductResponse'
 
+    ErrorCode:
+      type: string
+      description: Код ошибки
+      enum:
+        - PRODUCT_NOT_FOUND
+        - PRODUCT_INACTIVE
+        - ORDER_NOT_FOUND
+        - ORDER_LIMIT_EXCEEDED
+        - ORDER_HAS_ACTIVE
+        - INVALID_STATE_TRANSITION
+        - INSUFFICIENT_STOCK
+        - PROMO_CODE_INVALID
+        - PROMO_CODE_MIN_AMOUNT
+        - ORDER_OWNERSHIP_VIOLATION
+        - VALIDATION_ERROR
+
+    ValidationErrorDetails:
+      type: object
+      required: [errors]
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
     ErrorResponse:
       type: object
-      required: [error_code, message]
+      required:
+        - error_code
+        - message
       properties:
         error_code:
-          type: string
+          $ref: '#/components/schemas/ErrorCode'
         message:
           type: string
         details:

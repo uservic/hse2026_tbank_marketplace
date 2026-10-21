@@ -31,7 +31,7 @@ public class ProductController implements ProductApi {
 
     @Override
     public ResponseEntity<Void> deleteProduct(UUID id) {
-        productService.delete(id);
+        productService.softDelete(id);
 
         return ResponseEntity.noContent().build();
     }

@@ -13,3 +13,14 @@ management:
     web:
       exposure:
         include: health
+
+# струткурное логирование (Elastic Common Schema)
+logging:
+  structured:
+    format:
+      console: ecs
+
+jwt:
+  secret:  ${JWT_SECRET:my-super-secret-key-for-marketplace-12345}
+  access-expiration-ms: 900000 # 15 минут
+  refresh-expiration-ms: 604800000 # 7 дней
